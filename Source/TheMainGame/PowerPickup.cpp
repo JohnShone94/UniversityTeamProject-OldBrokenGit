@@ -23,6 +23,6 @@ void APowerPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
 	if (OtherActor == Player)
 	{
-
+		Destroy();
 	}
 }
