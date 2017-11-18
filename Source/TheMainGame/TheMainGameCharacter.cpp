@@ -9,6 +9,8 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Pickup.h"
+#include "PowerPickup.h"
 #include "MotionControllerComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -81,6 +83,11 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+
+	//this sets the base power level for the character.
+	MaxPower = 200;
+	CurrentPower = MaxPower;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -294,4 +301,42 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ATheMainGameCharacter::TouchUpdate);
 	}
 	return bResult;
+}
+
+void ATheMainGameCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	APickup* const pickup = Cast<APickup>(OtherActor);
+	if (pickup && !pickup->IsPendingKill() && pickup->IsActive())
+	{
+		pickup->WasCollected();
+
+		APowerPickup* const powerPickup = Cast<APowerPickup>(pickup);
+		if (powerPickup)
+		{
+			//increase the current power.
+			powerCollected += powerPickup->GetPower();
+		}
+		
+		pickup->SetActive(false);
+	}
+	if (powerCollected > 0)
+	{
+		UpdatePower(powerCollected);
+		powerCollected = 0;
+	}
+}
+
+int ATheMainGameCharacter::GetMaxPower()
+{
+	return MaxPower;
+}
+
+int ATheMainGameCharacter::GetCurrentPower()
+{
+	return CurrentPower;
+}
+
+void ATheMainGameCharacter::UpdatePower(int power)
+{
+	CurrentPower = CurrentPower + power;
 }

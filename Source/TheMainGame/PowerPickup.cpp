@@ -5,24 +5,17 @@
 // Sets default values
 APowerPickup::APowerPickup()
 {
-	this->PowerPickupRoot = CreateDefaultSubobject<USceneComponent>(TEXT("PowerPickupRoot"));
-	this->RootComponent = this->PowerPickupRoot;
-
-	this->PowerPickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PowerPickupMesh"));
-	this->PowerPickupMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-
-	this->PowerPickupCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("PowerPickupCollision"));
-	this->PowerPickupCollision->bGenerateOverlapEvents = true;
-	this->PowerPickupCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-	this->PowerPickupCollision->OnComponentBeginOverlap.AddDynamic(this, &APowerPickup::OnOverlapBegin);
-	this->PowerPickupCollision->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	PowerAmount = 10;
 }
 
-void APowerPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APowerPickup::WasCollected_Implementation()
 {
-	ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
-	if (OtherActor == Player)
-	{
-		Destroy();
-	}
+	Super::WasCollected_Implementation();
+	Destroy();
+}
+// Returns the amount of power this pickup gives.
+int APowerPickup::GetPower()
+{
+
+	return PowerAmount;
 }

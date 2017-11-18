@@ -138,5 +138,33 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+
+
+	//THIS IS STUFF THAT I HAVE ADDED TO THIS FILE!
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+		int MaxPower;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Power")
+		int CurrentPower;
+
+	UPROPERTY(VisibleAnywhere, Category = "Power")
+		int powerCollected;
+
+
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+public:
+	UFUNCTION(BlueprintPure, Category = "Power")
+		int GetMaxPower();
+
+	UFUNCTION(BlueprintPure, Category = "Power")
+		int GetCurrentPower();
+
+	UFUNCTION(BlueprintCallable, Category = "Power")
+		void UpdatePower(int power);
+
+
 };
 
