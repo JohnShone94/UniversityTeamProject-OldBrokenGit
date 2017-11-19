@@ -45,6 +45,9 @@ class ATheMainGameCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class USphereComponent* CollectionSphereComponent;
+
 public:
 	ATheMainGameCharacter();
 
@@ -138,12 +141,15 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-
+	FORCEINLINE class USphereComponent* GetCollectionSphereComponent() const { return CollectionSphereComponent; }
 
 	//THIS IS STUFF THAT I HAVE ADDED TO THIS FILE!
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
 		int MaxPower;
+
+	UFUNCTION(BlueprintCallable, Category = "Pickup")
+	void CollectPickups();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Power")
@@ -151,9 +157,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Power")
 		int powerCollected;
-
-
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
 	UFUNCTION(BlueprintPure, Category = "Power")
@@ -165,6 +168,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Power")
 		void UpdatePower(int power);
 
+	void OnActorBeginOverlap();
 
 };
 

@@ -33,14 +33,10 @@ public:
 		void WasCollected();
 		virtual void WasCollected_Implementation();
 
-
-protected:
-	bool bIsActive;
-
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* PickupMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
-		class USceneComponent* PickupRoot;
+protected:
+	bool bIsActive;
 };

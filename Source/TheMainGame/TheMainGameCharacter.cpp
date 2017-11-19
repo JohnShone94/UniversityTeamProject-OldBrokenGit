@@ -6,11 +6,11 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pickup.h"
-#include "PowerPickup.h"
 #include "MotionControllerComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -85,6 +85,11 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	//bUsingMotionControllers = true;
 
 
+	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
+	CollectionSphereComponent -> SetupAttachment(RootComponent);
+	CollectionSphereComponent -> SetSphereRadius(200.0f);
+
+
 	//this sets the base power level for the character.
 	MaxPower = 200;
 	CurrentPower = MaxPower;
@@ -122,6 +127,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+
+
 	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ATheMainGameCharacter::TouchStarted);
 	if (EnableTouchscreenMovement(PlayerInputComponent) == false)
 	{
@@ -140,6 +147,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAxis("TurnRate", this, &ATheMainGameCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATheMainGameCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("Collect", IE_Pressed, this, &ATheMainGameCharacter::CollectPickups);
 }
 
 void ATheMainGameCharacter::OnFire()
@@ -303,27 +312,26 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 	return bResult;
 }
 
-void ATheMainGameCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ATheMainGameCharacter::CollectPickups()
 {
-	APickup* const pickup = Cast<APickup>(OtherActor);
-	if (pickup && !pickup->IsPendingKill() && pickup->IsActive())
-	{
-		pickup->WasCollected();
+	TArray<AActor*> CollectedActors;
+	CollectionSphereComponent->GetOverlappingActors(CollectedActors);
 
-		APowerPickup* const powerPickup = Cast<APowerPickup>(pickup);
-		if (powerPickup)
-		{
-			//increase the current power.
-			powerCollected += powerPickup->GetPower();
-		}
-		
-		pickup->SetActive(false);
-	}
-	if (powerCollected > 0)
+	for (int32 i = 0; i < CollectedActors.Num(); i++)
 	{
-		UpdatePower(powerCollected);
-		powerCollected = 0;
+		APickup* const pickups = Cast<APickup>(CollectedActors[i]);
+		if (pickups && !pickups->IsPendingKill() && pickups->IsActive())
+		{
+			pickups->WasCollected();
+			pickups->SetActive(false);
+		}
 	}
+}
+
+void ATheMainGameCharacter::OnActorBeginOverlap()
+{
+	UE_LOG(LogClass, Log, TEXT("You Just Picked Up"));
+	CollectPickups();
 }
 
 int ATheMainGameCharacter::GetMaxPower()
