@@ -28,7 +28,7 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 
-		FString Output = FString::Printf(TEXT("Now Teleporting to next world"));
+		FString Output = FString::Printf(TEXT("Whooooooooooosh!!!!!!!"));
 		GEngine->AddOnScreenDebugMessage(1, 5, FColor::White, Output);
 
 	}
