@@ -6,9 +6,11 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Pickup.h"
 #include "MotionControllerComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -81,6 +83,16 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+
+	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
+	CollectionSphereComponent -> SetupAttachment(RootComponent);
+	CollectionSphereComponent -> SetSphereRadius(200.0f);
+
+
+	//this sets the base power level for the character.
+	MaxPower = 200;
+	CurrentPower = MaxPower;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -115,6 +127,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+
+
 	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ATheMainGameCharacter::TouchStarted);
 	if (EnableTouchscreenMovement(PlayerInputComponent) == false)
 	{
@@ -133,6 +147,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAxis("TurnRate", this, &ATheMainGameCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATheMainGameCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("Collect", IE_Pressed, this, &ATheMainGameCharacter::CollectPickups);
 }
 
 void ATheMainGameCharacter::OnFire()
@@ -294,4 +310,41 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ATheMainGameCharacter::TouchUpdate);
 	}
 	return bResult;
+}
+
+void ATheMainGameCharacter::CollectPickups()
+{
+	TArray<AActor*> CollectedActors;
+	CollectionSphereComponent->GetOverlappingActors(CollectedActors);
+
+	for (int32 i = 0; i < CollectedActors.Num(); i++)
+	{
+		APickup* const pickups = Cast<APickup>(CollectedActors[i]);
+		if (pickups && !pickups->IsPendingKill() && pickups->IsActive())
+		{
+			pickups->WasCollected();
+			pickups->SetActive(false);
+		}
+	}
+}
+
+void ATheMainGameCharacter::OnActorBeginOverlap()
+{
+	UE_LOG(LogClass, Log, TEXT("You Just Picked Up"));
+	CollectPickups();
+}
+
+int ATheMainGameCharacter::GetMaxPower()
+{
+	return MaxPower;
+}
+
+int ATheMainGameCharacter::GetCurrentPower()
+{
+	return CurrentPower;
+}
+
+void ATheMainGameCharacter::UpdatePower(int power)
+{
+	CurrentPower = CurrentPower + power;
 }
