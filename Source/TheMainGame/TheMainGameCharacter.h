@@ -45,6 +45,9 @@ class ATheMainGameCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class USphereComponent* CollectionSphereComponent;
+
 public:
 	ATheMainGameCharacter();
 
@@ -137,6 +140,35 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	FORCEINLINE class USphereComponent* GetCollectionSphereComponent() const { return CollectionSphereComponent; }
+
+	//THIS IS STUFF THAT I HAVE ADDED TO THIS FILE!
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+		int MaxPower;
+
+	UFUNCTION(BlueprintCallable, Category = "Pickup")
+	void CollectPickups();
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Power")
+		int CurrentPower;
+
+	UPROPERTY(VisibleAnywhere, Category = "Power")
+		int powerCollected;
+
+public:
+	UFUNCTION(BlueprintPure, Category = "Power")
+		int GetMaxPower();
+
+	UFUNCTION(BlueprintPure, Category = "Power")
+		int GetCurrentPower();
+
+	UFUNCTION(BlueprintCallable, Category = "Power")
+		void UpdatePower(int power);
+
+	void OnActorBeginOverlap();
 
 };
 
