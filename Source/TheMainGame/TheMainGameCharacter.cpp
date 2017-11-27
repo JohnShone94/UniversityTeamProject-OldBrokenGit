@@ -87,12 +87,12 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
 	CollectionSphereComponent -> SetupAttachment(RootComponent);
-	CollectionSphereComponent -> SetSphereRadius(200.0f);
+	CollectionSphereComponent -> SetSphereRadius(80.0f);
 
 
 	//this sets the base power level for the character.
 	MaxPower = 200;
-	CurrentPower = MaxPower;
+	CurrentPower = 0;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -320,18 +320,13 @@ void ATheMainGameCharacter::CollectPickups()
 	for (int32 i = 0; i < CollectedActors.Num(); i++)
 	{
 		APickup* const pickups = Cast<APickup>(CollectedActors[i]);
-		if (pickups && !pickups->IsPendingKill() && pickups->IsActive())
+		if (pickups && !pickups->IsPendingKill() && pickups->IsActive() && this->GetCurrentPower() != this->GetMaxPower())
 		{
+			this->UpdatePower(25);
 			pickups->WasCollected();
 			pickups->SetActive(false);
 		}
 	}
-}
-
-void ATheMainGameCharacter::OnActorBeginOverlap()
-{
-	UE_LOG(LogClass, Log, TEXT("You Just Picked Up"));
-	CollectPickups();
 }
 
 int ATheMainGameCharacter::GetMaxPower()

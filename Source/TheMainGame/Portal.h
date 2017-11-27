@@ -5,6 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "TheMainGameCharacter.h"
 #include "Engine.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -23,15 +24,22 @@ public:
 	USceneComponent* PortalRoot;
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* PortalMesh;
+		UStaticMeshComponent* PortalMesh;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* PortalStairsMesh;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* PortalStandMesh;
 
 	UPROPERTY(EditAnywhere)
-	UBoxComponent* PortalCollision;
+		UBoxComponent* PortalCollision;
 
 
 	UPROPERTY(EditAnywhere)
 	FName LevelToLoad;
 
+	TheMainGameCharacter* Character;
+
+protected:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

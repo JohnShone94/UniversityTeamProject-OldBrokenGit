@@ -12,6 +12,12 @@ APortal::APortal()
 	this->PortalMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalMesh"));
 	this->PortalMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
+	this->PortalStairsMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalStairsMesh"));
+	this->PortalStairsMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	this->PortalStandMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalStandMesh"));
+	this->PortalStandMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
 	this->PortalCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("PortalCollision"));
 	this->PortalCollision->bGenerateOverlapEvents = true;
 	this->PortalCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
@@ -26,9 +32,10 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
 	if(OtherActor == Player && LevelToLoad != "")
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 
-		FString Output = FString::Printf(TEXT("Whooooooooooosh!!!!!!!"));
+		this->Character->UpdatePower(-10);
+
+		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 		GEngine->AddOnScreenDebugMessage(1, 5, FColor::White, Output);
 
 	}

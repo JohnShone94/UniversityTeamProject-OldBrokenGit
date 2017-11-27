@@ -8,6 +8,7 @@ APickup::APickup()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bIsActive = true;
+
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
 	RootComponent = PickupMesh;
 }
@@ -40,6 +41,4 @@ void APickup::WasCollected_Implementation()
 {
 	FString PickupDebugString = GetName();
 	UE_LOG(LogClass, Log, TEXT("You Just Picked Up %s"), *PickupDebugString);
-
-
 }
