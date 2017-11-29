@@ -87,7 +87,7 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
 	CollectionSphereComponent -> SetupAttachment(RootComponent);
-	CollectionSphereComponent -> SetSphereRadius(200.0f);
+	CollectionSphereComponent -> SetSphereRadius(150.0f);
 
 
 	//this sets the base power level for the character.
