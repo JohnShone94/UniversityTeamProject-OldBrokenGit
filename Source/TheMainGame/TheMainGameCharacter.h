@@ -145,30 +145,7 @@ public:
 
 	//THIS IS STUFF THAT I HAVE ADDED TO THIS FILE!
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
-		int MaxPower;
-
 	UFUNCTION(BlueprintCallable, Category = "Pickup")
 	void CollectPickups();
-
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Power")
-		int CurrentPower;
-
-	UPROPERTY(VisibleAnywhere, Category = "Power")
-		int powerCollected;
-
-public:
-	UFUNCTION(BlueprintPure, Category = "Power")
-		int GetMaxPower();
-
-	UFUNCTION(BlueprintPure, Category = "Power")
-		int GetCurrentPower();
-
-	UFUNCTION(BlueprintCallable, Category = "Power")
-		void UpdatePower(int power);
-
-	void OnActorBeginOverlap();
-
 };
 

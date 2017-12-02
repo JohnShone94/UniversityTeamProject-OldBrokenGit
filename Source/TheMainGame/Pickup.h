@@ -10,8 +10,8 @@ UCLASS()
 class THEMAINGAME_API APickup : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	APickup();
 
@@ -31,11 +31,13 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 		void WasCollected();
-		virtual void WasCollected_Implementation();
+	virtual void WasCollected_Implementation();
 
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
-		class UStaticMeshComponent* PickupMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
+		USceneComponent* PickupRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* PickupMesh;
 
 protected:
 	bool bIsActive;

@@ -16,9 +16,6 @@ public:
 	
 	void WasCollected_Implementation() override;
 
-	int GetPower();
-
-protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power", meta = (BlueprintProtected = "true"))
 		int PowerAmount;
 };

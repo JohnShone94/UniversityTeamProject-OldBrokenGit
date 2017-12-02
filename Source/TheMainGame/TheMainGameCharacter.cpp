@@ -9,6 +9,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include "TheSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pickup.h"
 #include "MotionControllerComponent.h"
@@ -88,11 +89,6 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
 	CollectionSphereComponent -> SetupAttachment(RootComponent);
 	CollectionSphereComponent -> SetSphereRadius(150.0f);
-
-
-	//this sets the base power level for the character.
-	MaxPower = 200;
-	CurrentPower = MaxPower;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -114,6 +110,7 @@ void ATheMainGameCharacter::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -326,25 +323,4 @@ void ATheMainGameCharacter::CollectPickups()
 			pickups->SetActive(false);
 		}
 	}
-}
-
-void ATheMainGameCharacter::OnActorBeginOverlap()
-{
-	UE_LOG(LogClass, Log, TEXT("You Just Picked Up"));
-	CollectPickups();
-}
-
-int ATheMainGameCharacter::GetMaxPower()
-{
-	return MaxPower;
-}
-
-int ATheMainGameCharacter::GetCurrentPower()
-{
-	return CurrentPower;
-}
-
-void ATheMainGameCharacter::UpdatePower(int power)
-{
-	CurrentPower = CurrentPower + power;
 }

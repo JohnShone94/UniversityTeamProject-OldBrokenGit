@@ -14,6 +14,3 @@ class ATheMainGameGameMode : public AGameModeBase
 public:
 	ATheMainGameGameMode();
 };
-
-
-
