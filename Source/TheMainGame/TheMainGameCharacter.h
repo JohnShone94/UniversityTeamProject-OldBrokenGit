@@ -147,5 +147,27 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Pickup")
 	void CollectPickups();
+
+
+
+	//----------------------------------------------------------------------------------------------------------------//
+	//-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
+	//----------------------------------------------------------------------------------------------------------------//
+public:
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetCurrentPower(int power);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		int GetCurrentPower();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetMaxPower(int power);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		int GetMaxPower();
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int CurrentPower;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int MaxPower;
 };
 

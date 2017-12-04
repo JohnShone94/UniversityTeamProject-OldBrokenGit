@@ -19,19 +19,30 @@ public:
 	// Sets default values for this actor's properties
 	APortal();
 
-	UPROPERTY(EditAnywhere)
-	USceneComponent* PortalRoot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		USceneComponent* PortalRoot;
 
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* PortalMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		UStaticMeshComponent* PortalMesh;
 
-	UPROPERTY(EditAnywhere)
-	UBoxComponent* PortalCollision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		UStaticMeshComponent* PortalStandMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		UStaticMeshComponent* PortalStairsMesh;
 
-	UPROPERTY(EditAnywhere)
-	FName LevelToLoad;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		UBoxComponent* PortalCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		FName LevelToLoad;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		FVector TeleportVect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+		APlayerStart* PlayerStart;
 
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

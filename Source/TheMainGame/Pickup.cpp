@@ -3,6 +3,7 @@
 #include "Pickup.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "TheMainGameCharacter.h"
 
 // Sets default values
 APickup::APickup()

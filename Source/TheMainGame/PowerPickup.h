@@ -18,4 +18,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power", meta = (BlueprintProtected = "true"))
 		int PowerAmount;
+
+	UFUNCTION(BlueprintPure, Category = Basic)
+		int GetPower();
 };

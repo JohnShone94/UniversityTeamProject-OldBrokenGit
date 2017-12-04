@@ -1,6 +1,7 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #include "TheMainGameCharacter.h"
+#include "Engine.h"
 #include "TheMainGameProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
@@ -11,8 +12,10 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TheSaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "Pickup.h"
+#include "PowerPickup.h"
 #include "MotionControllerComponent.h"
+#include <EngineGlobals.h>
+#include <Runtime/Engine/Classes/Engine/Engine.h>
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -96,6 +99,28 @@ void ATheMainGameCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
+	{
+		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+		SaveGameInstance->sCurrentPower = 15;
+		SaveGameInstance->sMaxPower = 200;
+		SaveGameInstance->sGoing = false;
+		SaveGameInstance->sWorldName = "Base";
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Created the save game file"));
+	}
+
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
+	CurrentPower = LoadGameInstance->sCurrentPower;
+	MaxPower = LoadGameInstance->sMaxPower;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Power = &d"), this->CurrentPower);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Max Power = &d"), this->MaxPower);
+	
+
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 
@@ -110,7 +135,6 @@ void ATheMainGameCharacter::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -316,11 +340,48 @@ void ATheMainGameCharacter::CollectPickups()
 
 	for (int32 i = 0; i < CollectedActors.Num(); i++)
 	{
-		APickup* const pickups = Cast<APickup>(CollectedActors[i]);
+		APowerPickup* const pickups = Cast<APowerPickup>(CollectedActors[i]);
 		if (pickups && !pickups->IsPendingKill() && pickups->IsActive())
 		{
 			pickups->WasCollected();
 			pickups->SetActive(false);
+			SetCurrentPower(pickups->GetPower());
 		}
+	}
+}
+
+int ATheMainGameCharacter::GetCurrentPower()
+{
+	return CurrentPower;
+}
+
+void ATheMainGameCharacter::SetCurrentPower(int power)
+{
+	if (CurrentPower > MaxPower)
+	{
+		CurrentPower = MaxPower;
+	}
+	else
+	{
+		CurrentPower = CurrentPower + power;
+		UE_LOG(LogTemp, Warning, TEXT("Current Power: &d"), CurrentPower);
+	}
+}
+
+
+int ATheMainGameCharacter::GetMaxPower()
+{
+	return MaxPower;
+}
+
+void ATheMainGameCharacter::SetMaxPower(int power)
+{
+	if (MaxPower < 200)
+	{
+		MaxPower = 200;
+	}
+	else
+	{
+		MaxPower += power;
 	}
 }

@@ -3,7 +3,9 @@
 #include "TheMainGameGameMode.h"
 #include "TheMainGameHUD.h"
 #include "TheMainGameCharacter.h"
+#include "TheSaveGame.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 ATheMainGameGameMode::ATheMainGameGameMode()
 	: Super()
@@ -14,4 +16,5 @@ ATheMainGameGameMode::ATheMainGameGameMode()
 
 	// use our custom HUD class
 	HUDClass = ATheMainGameHUD::StaticClass();
+
 }

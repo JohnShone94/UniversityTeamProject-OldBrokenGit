@@ -3,6 +3,7 @@
 #include "PowerPickup.h"
 #include "TheSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "TheMainGameCharacter.h"
 
 // Sets default values
 APowerPickup::APowerPickup()
@@ -13,8 +14,10 @@ APowerPickup::APowerPickup()
 void APowerPickup::WasCollected_Implementation()
 {
 	Super::WasCollected_Implementation();
-
-	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	SaveGameInstance->SetCurrentPower(15);
 	Destroy();
+}
+
+int APowerPickup::GetPower()
+{
+	return PowerAmount;
 }

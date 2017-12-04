@@ -13,29 +13,26 @@ UCLASS()
 class THEMAINGAME_API UTheSaveGame : public USaveGame
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		FString SaveSlotName;
-
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		uint32 UserIndex;
 
 	UTheSaveGame();
 
 public:
-	UFUNCTION(BlueprintCallable, Category = Basic)
-	void SetCurrentPower(int power);
-	UFUNCTION(BlueprintPure, Category = Basic)
-	int GetCurrentPower();
 
-	UFUNCTION(BlueprintCallable, Category = Basic)
-		void SetMaxPower(int power);
-	UFUNCTION(BlueprintPure, Category = Basic)
-		int GetMaxPower();
+	UPROPERTY(EditAnywhere, Category = "Save Game")
+		FString SaveSlotName;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		int CurrentPower;
+	UPROPERTY(EditAnywhere, Category = "Save Game")
+		uint32 UserIndex;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		int MaxPower;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		int sCurrentPower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		int sMaxPower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sGoing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		FString sWorldName;
 };
