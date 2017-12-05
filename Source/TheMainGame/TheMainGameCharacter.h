@@ -164,10 +164,46 @@ public:
 	UFUNCTION(BlueprintPure, Category = Basic)
 		int GetMaxPower();
 
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetOffWorld(bool offworld);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetOffWorld();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetIsOverlapping(bool overlap);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetIsOverlapping();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetPortalActive(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetPortalActive();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetWorldName(FName name);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		FName GetWorldName();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Basic)
+		void LoadWorldSelector();
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool OffWorld;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool PortalActive;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Overlapping;
+
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int CurrentPower;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int MaxPower;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FName WorldName;
 };
 

@@ -13,6 +13,7 @@
 #include "TheSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "PowerPickup.h"
+#include "Portal.h"
 #include "MotionControllerComponent.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
@@ -98,29 +99,27 @@ void ATheMainGameCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-
+//------------------------------------------------ Setting up and loading the save game --------------------------------------------------------------------//
 	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
 	{
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 		SaveGameInstance->sCurrentPower = 15;
 		SaveGameInstance->sMaxPower = 200;
-		SaveGameInstance->sGoing = false;
+		SaveGameInstance->sOffWorld = false;
 		SaveGameInstance->sWorldName = "Base";
+		SaveGameInstance->sPortalActive = false;
 		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Created the save game file"));
 	}
 
 	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
 	CurrentPower = LoadGameInstance->sCurrentPower;
 	MaxPower = LoadGameInstance->sMaxPower;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Current Power = &d"), this->CurrentPower);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Max Power = &d"), this->MaxPower);
-	
-
+	OffWorld = LoadGameInstance->sOffWorld;
+	WorldName = LoadGameInstance->sWorldName;
+	PortalActive = LoadGameInstance->sPortalActive;
+//----------------------------------------------------------------------------------------------------------------------------------------------------------//
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 
@@ -170,6 +169,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATheMainGameCharacter::LookUpAtRate);
 
 	PlayerInputComponent->BindAction("Collect", IE_Pressed, this, &ATheMainGameCharacter::CollectPickups);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATheMainGameCharacter::LoadWorldSelector);
 }
 
 void ATheMainGameCharacter::OnFire()
@@ -333,6 +334,12 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 	return bResult;
 }
 
+
+
+//----------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
+//----------------------------------------------------------------------------------------------------------------//
+
 void ATheMainGameCharacter::CollectPickups()
 {
 	TArray<AActor*> CollectedActors;
@@ -364,7 +371,6 @@ void ATheMainGameCharacter::SetCurrentPower(int power)
 	else
 	{
 		CurrentPower = CurrentPower + power;
-		UE_LOG(LogTemp, Warning, TEXT("Current Power: &d"), CurrentPower);
 	}
 }
 
@@ -384,4 +390,43 @@ void ATheMainGameCharacter::SetMaxPower(int power)
 	{
 		MaxPower += power;
 	}
+}
+
+
+void ATheMainGameCharacter::SetOffWorld(bool offworld)
+{
+	OffWorld = offworld;
+}
+bool ATheMainGameCharacter::GetOffWorld()
+{
+	return OffWorld;
+}
+
+
+void ATheMainGameCharacter::SetIsOverlapping(bool overlap)
+{
+	Overlapping = overlap;
+}
+bool ATheMainGameCharacter::GetIsOverlapping()
+{
+	return Overlapping;
+}
+
+
+void ATheMainGameCharacter::SetPortalActive(bool active)
+{
+	PortalActive = active;
+}
+bool ATheMainGameCharacter::GetPortalActive()
+{
+	return PortalActive;
+}
+
+void ATheMainGameCharacter::SetWorldName(FName name)
+{
+	WorldName = name;
+}
+FName ATheMainGameCharacter::GetWorldName()
+{
+	return WorldName;
 }
