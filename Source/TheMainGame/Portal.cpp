@@ -47,6 +47,16 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		//Changing the character variables.
 		Character->SetOffWorld(!Character->GetOffWorld());
 
+		if (LevelToLoad == "Factory")
+		{
+			Character->SetWorldName("Base");
+		}
+		else
+		{
+			Character->SetPortalActive(false);
+		}
+
+
 		//Saving the variables.
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 		SaveGameInstance->sCurrentPower = Character->GetCurrentPower();

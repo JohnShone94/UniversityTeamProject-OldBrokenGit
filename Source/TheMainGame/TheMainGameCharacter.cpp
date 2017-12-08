@@ -106,6 +106,7 @@ void ATheMainGameCharacter::BeginPlay()
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 		SaveGameInstance->sCurrentPower = 15;
 		SaveGameInstance->sMaxPower = 200;
+		SaveGameInstance->sTime = 120;
 		SaveGameInstance->sOffWorld = false;
 		SaveGameInstance->sWorldName = "Base";
 		SaveGameInstance->sPortalActive = false;
@@ -425,6 +426,10 @@ bool ATheMainGameCharacter::GetPortalActive()
 void ATheMainGameCharacter::SetWorldName(FName name)
 {
 	WorldName = name;
+
+	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	SaveGameInstance->sWorldName = WorldName;
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 }
 FName ATheMainGameCharacter::GetWorldName()
 {
