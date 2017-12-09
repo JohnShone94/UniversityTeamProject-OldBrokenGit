@@ -170,9 +170,14 @@ public:
 		bool GetOffWorld();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
-		void SetIsOverlapping(bool overlap);
+		void SetIsOverlappingComp(bool overlap);
 	UFUNCTION(BlueprintPure, Category = Basic)
-		bool GetIsOverlapping();
+		bool GetIsOverlappingComp();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetIsOverlappingPower(bool overlap);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetIsOverlappingPower();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetPortalActive(bool active);
@@ -184,9 +189,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = Basic)
 		FName GetWorldName();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = Basic)
-		void LoadWorldSelector();
-
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool OffWorld;
@@ -195,7 +197,10 @@ private:
 		bool PortalActive;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-		bool Overlapping;
+		bool OverlappingComp;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool OverlappingPower;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int CurrentPower;

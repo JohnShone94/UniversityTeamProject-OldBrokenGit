@@ -169,8 +169,6 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATheMainGameCharacter::LookUpAtRate);
 
-	PlayerInputComponent->BindAction("Collect", IE_Pressed, this, &ATheMainGameCharacter::CollectPickups);
-
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATheMainGameCharacter::LoadWorldSelector);
 }
 
@@ -252,44 +250,6 @@ void ATheMainGameCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const 
 	TouchItem.bIsPressed = false;
 }
 
-//Commenting this section out to be consistent with FPS BP template.
-//This allows the user to turn without using the right virtual joystick
-
-//void ATheMainGameCharacter::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	if ((TouchItem.bIsPressed == true) && (TouchItem.FingerIndex == FingerIndex))
-//	{
-//		if (TouchItem.bIsPressed)
-//		{
-//			if (GetWorld() != nullptr)
-//			{
-//				UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
-//				if (ViewportClient != nullptr)
-//				{
-//					FVector MoveDelta = Location - TouchItem.Location;
-//					FVector2D ScreenSize;
-//					ViewportClient->GetViewportSize(ScreenSize);
-//					FVector2D ScaledDelta = FVector2D(MoveDelta.X, MoveDelta.Y) / ScreenSize;
-//					if (FMath::Abs(ScaledDelta.X) >= 4.0 / ScreenSize.X)
-//					{
-//						TouchItem.bMoved = true;
-//						float Value = ScaledDelta.X * BaseTurnRate;
-//						AddControllerYawInput(Value);
-//					}
-//					if (FMath::Abs(ScaledDelta.Y) >= 4.0 / ScreenSize.Y)
-//					{
-//						TouchItem.bMoved = true;
-//						float Value = ScaledDelta.Y * BaseTurnRate;
-//						AddControllerPitchInput(Value);
-//					}
-//					TouchItem.Location = Location;
-//				}
-//				TouchItem.Location = Location;
-//			}
-//		}
-//	}
-//}
-
 void ATheMainGameCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -341,23 +301,6 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 //-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
 //----------------------------------------------------------------------------------------------------------------//
 
-void ATheMainGameCharacter::CollectPickups()
-{
-	TArray<AActor*> CollectedActors;
-	CollectionSphereComponent->GetOverlappingActors(CollectedActors);
-
-	for (int32 i = 0; i < CollectedActors.Num(); i++)
-	{
-		APowerPickup* const pickups = Cast<APowerPickup>(CollectedActors[i]);
-		if (pickups && !pickups->IsPendingKill() && pickups->IsActive())
-		{
-			pickups->WasCollected();
-			pickups->SetActive(false);
-			SetCurrentPower(pickups->GetPower());
-		}
-	}
-}
-
 int ATheMainGameCharacter::GetCurrentPower()
 {
 	return CurrentPower;
@@ -404,14 +347,24 @@ bool ATheMainGameCharacter::GetOffWorld()
 }
 
 
-void ATheMainGameCharacter::SetIsOverlapping(bool overlap)
+void ATheMainGameCharacter::SetIsOverlappingComp(bool overlap)
 {
-	Overlapping = overlap;
+	OverlappingComp = overlap;
 }
-bool ATheMainGameCharacter::GetIsOverlapping()
+bool ATheMainGameCharacter::GetIsOverlappingComp()
 {
-	return Overlapping;
+	return OverlappingComp;
 }
+
+void ATheMainGameCharacter::SetIsOverlappingPower(bool overlap)
+{
+	OverlappingPower = overlap;
+}
+bool ATheMainGameCharacter::GetIsOverlappingPower()
+{
+	return OverlappingPower;
+}
+
 
 
 void ATheMainGameCharacter::SetPortalActive(bool active)
