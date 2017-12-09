@@ -14,5 +14,5 @@ class ATheMainGameGameMode : public AGameModeBase
 public:
 	ATheMainGameGameMode();
 
-	virtual void StartNewPlayer(APlayerController* NewPlayer)    override;
+	//virtual void StartNewPlayer(APlayerController* NewPlayer)    override;
 };

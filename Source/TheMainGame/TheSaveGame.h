@@ -31,8 +31,14 @@ public:
 		int sMaxPower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
-		bool sGoing;
+		bool sOffWorld;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
-		FString sWorldName;
+		bool sPortalActive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		FName sWorldName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		int sTime;
 };
