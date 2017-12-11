@@ -45,9 +45,6 @@ class ATheMainGameCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		class USphereComponent* CollectionSphereComponent;
-
 public:
 	ATheMainGameCharacter();
 
@@ -141,14 +138,6 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-	FORCEINLINE class USphereComponent* GetCollectionSphereComponent() const { return CollectionSphereComponent; }
-
-	//THIS IS STUFF THAT I HAVE ADDED TO THIS FILE!
-protected:
-	UFUNCTION(BlueprintCallable, Category = "Pickup")
-	void CollectPickups();
-
-
 
 	//----------------------------------------------------------------------------------------------------------------//
 	//-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
@@ -170,9 +159,14 @@ public:
 		bool GetOffWorld();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
-		void SetIsOverlapping(bool overlap);
+		void SetIsOverlappingComp(bool overlap);
 	UFUNCTION(BlueprintPure, Category = Basic)
-		bool GetIsOverlapping();
+		bool GetIsOverlappingComp();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetIsOverlappingPower(bool overlap);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetIsOverlappingPower();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetPortalActive(bool active);
@@ -184,8 +178,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = Basic)
 		FName GetWorldName();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = Basic)
-		void LoadWorldSelector();
+	UFUNCTION(BlueprintPure, Category = Basic)
+		int GetTime();
+
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
@@ -195,13 +190,19 @@ private:
 		bool PortalActive;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-		bool Overlapping;
+		bool OverlappingComp;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool OverlappingPower;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int CurrentPower;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int MaxPower;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int CurrentTime;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName WorldName;
