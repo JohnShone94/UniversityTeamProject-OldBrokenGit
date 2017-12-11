@@ -12,7 +12,6 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TheSaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "PowerPickup.h"
 #include "Portal.h"
 #include "MotionControllerComponent.h"
 #include <EngineGlobals.h>
@@ -88,11 +87,6 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
-
-
-	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
-	CollectionSphereComponent -> SetupAttachment(RootComponent);
-	CollectionSphereComponent -> SetSphereRadius(150.0f);
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -104,11 +98,11 @@ void ATheMainGameCharacter::BeginPlay()
 	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
 	{
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = 15;
-		SaveGameInstance->sMaxPower = 200;
+		SaveGameInstance->sCurrentPower = 50;
+		SaveGameInstance->sMaxPower = 225;
 		SaveGameInstance->sTime = 120;
 		SaveGameInstance->sOffWorld = false;
-		SaveGameInstance->sWorldName = "Base";
+		SaveGameInstance->sWorldName = "The Labratory";
 		SaveGameInstance->sPortalActive = false;
 		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 	}
@@ -120,6 +114,8 @@ void ATheMainGameCharacter::BeginPlay()
 	OffWorld = LoadGameInstance->sOffWorld;
 	WorldName = LoadGameInstance->sWorldName;
 	PortalActive = LoadGameInstance->sPortalActive;
+	CurrentTime = LoadGameInstance->sTime;
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -169,7 +165,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATheMainGameCharacter::LookUpAtRate);
 
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATheMainGameCharacter::LoadWorldSelector);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATheMainGameCharacter::OnResetVR);
 }
 
 void ATheMainGameCharacter::OnFire()
@@ -300,7 +297,6 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 //----------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
 //----------------------------------------------------------------------------------------------------------------//
-
 int ATheMainGameCharacter::GetCurrentPower()
 {
 	return CurrentPower;
@@ -318,6 +314,10 @@ void ATheMainGameCharacter::SetCurrentPower(int power)
 	}
 }
 
+int ATheMainGameCharacter::GetTime()
+{
+	return CurrentTime;
+}
 
 int ATheMainGameCharacter::GetMaxPower()
 {

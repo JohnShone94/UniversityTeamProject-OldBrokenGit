@@ -3,16 +3,16 @@
 #pragma once
 
 #include "Pickup.h"
-#include "PowerPickup.generated.h"
+#include "PowerCapsule.generated.h"
 
 UCLASS()
-class THEMAINGAME_API APowerPickup : public APickup
+class THEMAINGAME_API APowerCapsule : public APickup
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APowerPickup();
+	APowerCapsule();
 	
 	void WasCollected_Implementation() override;
 

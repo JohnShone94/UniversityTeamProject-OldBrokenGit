@@ -45,9 +45,6 @@ class ATheMainGameCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		class USphereComponent* CollectionSphereComponent;
-
 public:
 	ATheMainGameCharacter();
 
@@ -141,14 +138,6 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-	FORCEINLINE class USphereComponent* GetCollectionSphereComponent() const { return CollectionSphereComponent; }
-
-	//THIS IS STUFF THAT I HAVE ADDED TO THIS FILE!
-protected:
-	UFUNCTION(BlueprintCallable, Category = "Pickup")
-	void CollectPickups();
-
-
 
 	//----------------------------------------------------------------------------------------------------------------//
 	//-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
@@ -189,6 +178,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = Basic)
 		FName GetWorldName();
 
+	UFUNCTION(BlueprintPure, Category = Basic)
+		int GetTime();
+
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool OffWorld;
@@ -207,6 +200,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int MaxPower;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int CurrentTime;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName WorldName;

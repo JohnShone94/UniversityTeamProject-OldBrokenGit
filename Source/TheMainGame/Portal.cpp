@@ -31,10 +31,6 @@ APortal::APortal()
 void APortal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	ATheMainGameCharacter* Character;
-	Character = (ATheMainGameCharacter*)GEngine->GetFirstLocalPlayerController(GetWorld())->GetPawn();
-	LevelToLoad = Character->GetWorldName();
 }
 
 void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -44,18 +40,12 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	Character = (ATheMainGameCharacter*)GEngine->GetFirstLocalPlayerController(GetWorld())->GetPawn();
 	if(OtherActor == Player && LevelToLoad != "" && Character->GetPortalActive())
 	{
+
+		LevelToLoad = Character->GetWorldName();
+
+
 		//Changing the character variables.
 		Character->SetOffWorld(!Character->GetOffWorld());
-
-		if (LevelToLoad == "Factory")
-		{
-			Character->SetWorldName("Base");
-		}
-		else
-		{
-			Character->SetPortalActive(false);
-		}
-
 
 		//Saving the variables.
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
