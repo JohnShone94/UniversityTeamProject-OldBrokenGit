@@ -31,7 +31,7 @@ public:
 		int sMaxPower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
-		bool sOffWorld;
+		FName sSpawnPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		bool sPortalActive;

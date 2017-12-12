@@ -51,9 +51,9 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 		SaveGameInstance->sCurrentPower = Character->GetCurrentPower();
 		SaveGameInstance->sMaxPower = Character->GetMaxPower();
-		SaveGameInstance->sOffWorld = Character->GetOffWorld();
 		SaveGameInstance->sPortalActive = Character->GetPortalActive();
 		SaveGameInstance->sWorldName = Character->GetWorldName();
+		SaveGameInstance->sSpawnPoint = Character->GetSpawnPoint();
 		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 
 		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
