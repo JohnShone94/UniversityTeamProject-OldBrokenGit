@@ -26,6 +26,7 @@ APortal::APortal()
 	this->PortalCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	this->PortalCollision->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnOverlapBegin);
 	this->PortalCollision->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
 }
 
 void APortal::Tick(float DeltaTime)
@@ -45,7 +46,7 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 
 		//Changing the character variables.
-		Character->SetOffWorld(!Character->GetOffWorld());
+		Character->SetSpawnPoint(FName("PortalStart"));
 
 		//Saving the variables.
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));

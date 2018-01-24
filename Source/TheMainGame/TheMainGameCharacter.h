@@ -186,6 +186,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = Basic)
 		int GetTime();
 
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void RunSaveGame();
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void RunLoadGame();
+
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
