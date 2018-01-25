@@ -178,8 +178,18 @@ public:
 	UFUNCTION(BlueprintPure, Category = Basic)
 		FName GetWorldName();
 
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetSpawnPoint(FName sp);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		FName GetSpawnPoint();
+
 	UFUNCTION(BlueprintPure, Category = Basic)
 		int GetTime();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void RunSaveGame();
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void RunLoadGame();
 
 
 private:
@@ -206,5 +216,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName WorldName;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FName SpawnPoint;
 };
 

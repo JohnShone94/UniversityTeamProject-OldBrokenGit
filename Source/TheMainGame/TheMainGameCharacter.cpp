@@ -94,27 +94,8 @@ void ATheMainGameCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 //------------------------------------------------ Setting up and loading the save game --------------------------------------------------------------------//
-	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
-	{
-		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = 50;
-		SaveGameInstance->sMaxPower = 225;
-		SaveGameInstance->sTime = 120;
-		SaveGameInstance->sOffWorld = false;
-		SaveGameInstance->sWorldName = "The Labratory";
-		SaveGameInstance->sPortalActive = false;
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-	}
+	RunSaveGame();
 
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
-	CurrentPower = LoadGameInstance->sCurrentPower;
-	MaxPower = LoadGameInstance->sMaxPower;
-	OffWorld = LoadGameInstance->sOffWorld;
-	WorldName = LoadGameInstance->sWorldName;
-	PortalActive = LoadGameInstance->sPortalActive;
-	CurrentTime = LoadGameInstance->sTime;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
@@ -387,4 +368,62 @@ void ATheMainGameCharacter::SetWorldName(FName name)
 FName ATheMainGameCharacter::GetWorldName()
 {
 	return WorldName;
+}
+
+
+void ATheMainGameCharacter::SetSpawnPoint(FName sp)
+{
+	SpawnPoint = sp;
+
+	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	SaveGameInstance->sSpawnPoint = SpawnPoint;
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+}
+FName ATheMainGameCharacter::GetSpawnPoint()
+{
+	return SpawnPoint;
+}
+
+
+void ATheMainGameCharacter::RunSaveGame()
+{
+	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
+	{
+		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+		SaveGameInstance->sCurrentPower = 50;
+		SaveGameInstance->sMaxPower = 225;
+		SaveGameInstance->sTime = 120;
+		SaveGameInstance->sWorldName = "The_Labratory";
+		SaveGameInstance->sPortalActive = false;
+		SaveGameInstance->sSpawnPoint = "PlayerStart";
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+	}
+
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
+	CurrentPower = LoadGameInstance->sCurrentPower;
+	MaxPower = LoadGameInstance->sMaxPower;
+	WorldName = LoadGameInstance->sWorldName;
+	PortalActive = LoadGameInstance->sPortalActive;
+	CurrentTime = LoadGameInstance->sTime;
+	SpawnPoint = LoadGameInstance->sSpawnPoint;
+
+
+}
+
+void ATheMainGameCharacter::RunLoadGame()
+{
+	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
+	CurrentPower = LoadGameInstance->sCurrentPower;
+	MaxPower = LoadGameInstance->sMaxPower;
+	WorldName = LoadGameInstance->sWorldName;
+	PortalActive = LoadGameInstance->sPortalActive;
+	CurrentTime = LoadGameInstance->sTime;
+	SpawnPoint = LoadGameInstance->sSpawnPoint;
+
+	UGameplayStatics::OpenLevel(GetWorld(), WorldName);
 }
