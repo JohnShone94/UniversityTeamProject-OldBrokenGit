@@ -12,7 +12,6 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TheSaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "PowerPickup.h"
 #include "Portal.h"
 #include "MotionControllerComponent.h"
 #include <EngineGlobals.h>
@@ -88,11 +87,6 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
-
-
-	CollectionSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollectionSphereComponent"));
-	CollectionSphereComponent -> SetupAttachment(RootComponent);
-	CollectionSphereComponent -> SetSphereRadius(150.0f);
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -100,26 +94,9 @@ void ATheMainGameCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 //------------------------------------------------ Setting up and loading the save game --------------------------------------------------------------------//
-	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
-	{
-		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = 15;
-		SaveGameInstance->sMaxPower = 200;
-		SaveGameInstance->sTime = 120;
-		SaveGameInstance->sOffWorld = false;
-		SaveGameInstance->sWorldName = "Base";
-		SaveGameInstance->sPortalActive = false;
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-	}
+	RunSaveGame();
 
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
-	CurrentPower = LoadGameInstance->sCurrentPower;
-	MaxPower = LoadGameInstance->sMaxPower;
-	OffWorld = LoadGameInstance->sOffWorld;
-	WorldName = LoadGameInstance->sWorldName;
-	PortalActive = LoadGameInstance->sPortalActive;
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -169,9 +146,8 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATheMainGameCharacter::LookUpAtRate);
 
-	PlayerInputComponent->BindAction("Collect", IE_Pressed, this, &ATheMainGameCharacter::CollectPickups);
 
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATheMainGameCharacter::LoadWorldSelector);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATheMainGameCharacter::OnResetVR);
 }
 
 void ATheMainGameCharacter::OnFire()
@@ -252,44 +228,6 @@ void ATheMainGameCharacter::EndTouch(const ETouchIndex::Type FingerIndex, const 
 	TouchItem.bIsPressed = false;
 }
 
-//Commenting this section out to be consistent with FPS BP template.
-//This allows the user to turn without using the right virtual joystick
-
-//void ATheMainGameCharacter::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	if ((TouchItem.bIsPressed == true) && (TouchItem.FingerIndex == FingerIndex))
-//	{
-//		if (TouchItem.bIsPressed)
-//		{
-//			if (GetWorld() != nullptr)
-//			{
-//				UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
-//				if (ViewportClient != nullptr)
-//				{
-//					FVector MoveDelta = Location - TouchItem.Location;
-//					FVector2D ScreenSize;
-//					ViewportClient->GetViewportSize(ScreenSize);
-//					FVector2D ScaledDelta = FVector2D(MoveDelta.X, MoveDelta.Y) / ScreenSize;
-//					if (FMath::Abs(ScaledDelta.X) >= 4.0 / ScreenSize.X)
-//					{
-//						TouchItem.bMoved = true;
-//						float Value = ScaledDelta.X * BaseTurnRate;
-//						AddControllerYawInput(Value);
-//					}
-//					if (FMath::Abs(ScaledDelta.Y) >= 4.0 / ScreenSize.Y)
-//					{
-//						TouchItem.bMoved = true;
-//						float Value = ScaledDelta.Y * BaseTurnRate;
-//						AddControllerPitchInput(Value);
-//					}
-//					TouchItem.Location = Location;
-//				}
-//				TouchItem.Location = Location;
-//			}
-//		}
-//	}
-//}
-
 void ATheMainGameCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -340,24 +278,6 @@ bool ATheMainGameCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 //----------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------NEW FUNCTIONS AND VARIABLES--------------------------------------------//
 //----------------------------------------------------------------------------------------------------------------//
-
-void ATheMainGameCharacter::CollectPickups()
-{
-	TArray<AActor*> CollectedActors;
-	CollectionSphereComponent->GetOverlappingActors(CollectedActors);
-
-	for (int32 i = 0; i < CollectedActors.Num(); i++)
-	{
-		APowerPickup* const pickups = Cast<APowerPickup>(CollectedActors[i]);
-		if (pickups && !pickups->IsPendingKill() && pickups->IsActive())
-		{
-			pickups->WasCollected();
-			pickups->SetActive(false);
-			SetCurrentPower(pickups->GetPower());
-		}
-	}
-}
-
 int ATheMainGameCharacter::GetCurrentPower()
 {
 	return CurrentPower;
@@ -375,6 +295,10 @@ void ATheMainGameCharacter::SetCurrentPower(int power)
 	}
 }
 
+int ATheMainGameCharacter::GetTime()
+{
+	return CurrentTime;
+}
 
 int ATheMainGameCharacter::GetMaxPower()
 {
@@ -404,14 +328,24 @@ bool ATheMainGameCharacter::GetOffWorld()
 }
 
 
-void ATheMainGameCharacter::SetIsOverlapping(bool overlap)
+void ATheMainGameCharacter::SetIsOverlappingComp(bool overlap)
 {
-	Overlapping = overlap;
+	OverlappingComp = overlap;
 }
-bool ATheMainGameCharacter::GetIsOverlapping()
+bool ATheMainGameCharacter::GetIsOverlappingComp()
 {
-	return Overlapping;
+	return OverlappingComp;
 }
+
+void ATheMainGameCharacter::SetIsOverlappingPower(bool overlap)
+{
+	OverlappingPower = overlap;
+}
+bool ATheMainGameCharacter::GetIsOverlappingPower()
+{
+	return OverlappingPower;
+}
+
 
 
 void ATheMainGameCharacter::SetPortalActive(bool active)
@@ -434,4 +368,62 @@ void ATheMainGameCharacter::SetWorldName(FName name)
 FName ATheMainGameCharacter::GetWorldName()
 {
 	return WorldName;
+}
+
+
+void ATheMainGameCharacter::SetSpawnPoint(FName sp)
+{
+	SpawnPoint = sp;
+
+	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	SaveGameInstance->sSpawnPoint = SpawnPoint;
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+}
+FName ATheMainGameCharacter::GetSpawnPoint()
+{
+	return SpawnPoint;
+}
+
+
+void ATheMainGameCharacter::RunSaveGame()
+{
+	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
+	{
+		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+		SaveGameInstance->sCurrentPower = 50;
+		SaveGameInstance->sMaxPower = 225;
+		SaveGameInstance->sTime = 120;
+		SaveGameInstance->sWorldName = "The_Labratory";
+		SaveGameInstance->sPortalActive = false;
+		SaveGameInstance->sSpawnPoint = "PlayerStart";
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+	}
+
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
+	CurrentPower = LoadGameInstance->sCurrentPower;
+	MaxPower = LoadGameInstance->sMaxPower;
+	WorldName = LoadGameInstance->sWorldName;
+	PortalActive = LoadGameInstance->sPortalActive;
+	CurrentTime = LoadGameInstance->sTime;
+	SpawnPoint = LoadGameInstance->sSpawnPoint;
+
+
+}
+
+void ATheMainGameCharacter::RunLoadGame()
+{
+	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
+	CurrentPower = LoadGameInstance->sCurrentPower;
+	MaxPower = LoadGameInstance->sMaxPower;
+	WorldName = LoadGameInstance->sWorldName;
+	PortalActive = LoadGameInstance->sPortalActive;
+	CurrentTime = LoadGameInstance->sTime;
+	SpawnPoint = LoadGameInstance->sSpawnPoint;
+
+	UGameplayStatics::OpenLevel(GetWorld(), WorldName);
 }
