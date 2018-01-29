@@ -292,6 +292,10 @@ void ATheMainGameCharacter::SetCurrentPower(int power)
 	else
 	{
 		CurrentPower = CurrentPower + power;
+		if (CurrentPower < 0)
+		{
+			CurrentPower = 0;
+		}
 	}
 }
 
@@ -408,8 +412,6 @@ void ATheMainGameCharacter::RunSaveGame()
 	PortalActive = LoadGameInstance->sPortalActive;
 	CurrentTime = LoadGameInstance->sTime;
 	SpawnPoint = LoadGameInstance->sSpawnPoint;
-
-
 }
 
 void ATheMainGameCharacter::RunLoadGame()
