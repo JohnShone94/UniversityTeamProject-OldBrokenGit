@@ -114,6 +114,11 @@ void ATheMainGameCharacter::BeginPlay()
 	}
 }
 
+void ATheMainGameCharacter::Tick(float DeltaTime)
+{
+	GetWorld()->GetTimerManager().SetTimer(SaveTimer, this, &ATheMainGameCharacter::SetSpawnPoint, 60.0f, true);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -375,19 +380,12 @@ FName ATheMainGameCharacter::GetWorldName()
 }
 
 
-void ATheMainGameCharacter::SetSpawnPoint(FName sp)
+void ATheMainGameCharacter::SetSpawnPoint()
 {
-	SpawnPoint = sp;
-
 	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	SaveGameInstance->sSpawnPoint = SpawnPoint;
+	SaveGameInstance->location = this->GetActorTransform;
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 }
-FName ATheMainGameCharacter::GetSpawnPoint()
-{
-	return SpawnPoint;
-}
-
 
 void ATheMainGameCharacter::RunSaveGame()
 {
