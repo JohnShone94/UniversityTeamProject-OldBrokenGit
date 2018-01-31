@@ -321,6 +321,44 @@ void ATheMainGameCharacter::SetMaxPower(int power)
 	}
 }
 
+int ATheMainGameCharacter::GetMaxHealth()
+{
+	return pMaxHealth;
+}
+
+void ATheMainGameCharacter::SetMaxHealth(int maxHealth)
+{
+	if (pMaxHealth < 200)
+	{
+		pMaxHealth = 200;
+	}
+	else
+	{
+		pMaxHealth += maxHealth;
+	}
+}
+int ATheMainGameCharacter::GetCurrentHealth()
+{
+	return pHealth;
+}
+
+void ATheMainGameCharacter::SetCurrentHealth(int health)
+{
+	if (pHealth > pMaxHealth)
+	{
+		pHealth = pMaxHealth;
+	}
+	else
+	{
+		pHealth = pHealth + health;
+		if (pHealth < 0)
+		{
+			pHealth = 0;
+		}
+	}
+}
+
+
 
 void ATheMainGameCharacter::SetOffWorld(bool offworld)
 {
@@ -395,12 +433,14 @@ void ATheMainGameCharacter::RunSaveGame()
 	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
 	{
 		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = 50;
-		SaveGameInstance->sMaxPower = 225;
+		SaveGameInstance->sCurrentPower = 100;
+		SaveGameInstance->sMaxPower = 200;
 		SaveGameInstance->sTime = 120;
 		SaveGameInstance->sWorldName = "The_Labratory";
 		SaveGameInstance->sPortalActive = false;
 		SaveGameInstance->sSpawnPoint = "PlayerStart";
+		SaveGameInstance->sHealth = 200;
+		SaveGameInstance->sMaxHealth = 200;
 		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 	}
 
@@ -412,6 +452,8 @@ void ATheMainGameCharacter::RunSaveGame()
 	PortalActive = LoadGameInstance->sPortalActive;
 	CurrentTime = LoadGameInstance->sTime;
 	SpawnPoint = LoadGameInstance->sSpawnPoint;
+	pHealth = LoadGameInstance->sHealth;
+	pMaxHealth = LoadGameInstance->sMaxHealth;
 }
 
 void ATheMainGameCharacter::RunLoadGame()
@@ -426,6 +468,8 @@ void ATheMainGameCharacter::RunLoadGame()
 	PortalActive = LoadGameInstance->sPortalActive;
 	CurrentTime = LoadGameInstance->sTime;
 	SpawnPoint = LoadGameInstance->sSpawnPoint;
+	pHealth = LoadGameInstance->sHealth;
+	pMaxHealth = LoadGameInstance->sMaxHealth;
 
 	UGameplayStatics::OpenLevel(GetWorld(), WorldName);
 }
