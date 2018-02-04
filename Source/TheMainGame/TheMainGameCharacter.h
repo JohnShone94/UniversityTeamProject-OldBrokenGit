@@ -164,11 +164,6 @@ public:
 		int GetMaxHealth ();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
-		void SetOffWorld(bool offworld);
-	UFUNCTION(BlueprintPure, Category = Basic)
-		bool GetOffWorld();
-
-	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetIsOverlappingComp(bool overlap);
 	UFUNCTION(BlueprintPure, Category = Basic)
 		bool GetIsOverlappingComp();
@@ -203,9 +198,6 @@ public:
 
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		bool OffWorld;
-
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool PortalActive;
 

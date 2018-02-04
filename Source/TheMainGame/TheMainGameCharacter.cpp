@@ -358,18 +358,6 @@ void ATheMainGameCharacter::SetCurrentHealth(int health)
 	}
 }
 
-
-
-void ATheMainGameCharacter::SetOffWorld(bool offworld)
-{
-	OffWorld = offworld;
-}
-bool ATheMainGameCharacter::GetOffWorld()
-{
-	return OffWorld;
-}
-
-
 void ATheMainGameCharacter::SetIsOverlappingComp(bool overlap)
 {
 	OverlappingComp = overlap;
