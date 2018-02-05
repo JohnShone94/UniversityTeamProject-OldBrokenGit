@@ -50,4 +50,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		FVector location;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sOffWorld;
 };
