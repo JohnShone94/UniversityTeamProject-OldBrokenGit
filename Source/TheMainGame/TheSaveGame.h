@@ -31,6 +31,12 @@ public:
 		int sMaxPower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		int sHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		int sMaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		FName sSpawnPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
@@ -44,4 +50,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		FVector location;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sOffWorld;
 };

@@ -154,9 +154,14 @@ public:
 		int GetMaxPower();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
-		void SetOffWorld(bool offworld);
+		void SetCurrentHealth(int health);
 	UFUNCTION(BlueprintPure, Category = Basic)
-		bool GetOffWorld();
+		int GetCurrentHealth ();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetMaxHealth(int health);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		int GetMaxHealth ();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetIsOverlappingComp(bool overlap);
@@ -194,9 +199,6 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-		bool OffWorld;
-
-	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool PortalActive;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
@@ -213,6 +215,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int CurrentTime;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int pHealth;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int pMaxHealth;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName WorldName;
