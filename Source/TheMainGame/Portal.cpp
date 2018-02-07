@@ -32,6 +32,7 @@ APortal::APortal()
 void APortal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 
 void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -43,19 +44,8 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	{
 
 		LevelToLoad = Character->GetWorldName();
-
-
-		//Changing the character variables.
-		Character->SetSpawnPoint(FName("PortalStart"));
-
 		//Saving the variables.
-		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = Character->GetCurrentPower();
-		SaveGameInstance->sMaxPower = Character->GetMaxPower();
-		SaveGameInstance->sPortalActive = Character->GetPortalActive();
-		SaveGameInstance->sWorldName = Character->GetWorldName();
-		SaveGameInstance->sSpawnPoint = Character->GetSpawnPoint();
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+		Character->RunSaveGame();
 
 		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 	}
