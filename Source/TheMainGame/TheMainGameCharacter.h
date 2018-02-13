@@ -190,6 +190,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = Basic)
 		int GetTime();
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void UpdateTime(int time);
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void ResetTime();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void RunSaveGame();

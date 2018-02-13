@@ -13,19 +13,19 @@ APortal::APortal()
 	this->RootComponent = this->PortalRoot;
 
 	this->PortalMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalMesh"));
-	this->PortalMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalMesh->SetupAttachment(this->RootComponent);
 
 	this->PortalStandMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalStandMesh"));
-	this->PortalStandMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalStandMesh->SetupAttachment(this->RootComponent);
 
 	this->PortalStairsMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalStairsMesh"));
-	this->PortalStairsMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalStairsMesh->SetupAttachment(this->RootComponent);
 
 	this->PortalCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("PortalCollision"));
 	this->PortalCollision->bGenerateOverlapEvents = true;
 	this->PortalCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	this->PortalCollision->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnOverlapBegin);
-	this->PortalCollision->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalCollision->SetupAttachment(this->RootComponent);
 
 }
 
@@ -42,11 +42,19 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	Character = (ATheMainGameCharacter*)GEngine->GetFirstLocalPlayerController(GetWorld())->GetPawn();
 	if(OtherActor == Player && LevelToLoad != "" && Character->GetPortalActive())
 	{
-
 		LevelToLoad = Character->GetWorldName();
+
+		if (Character->GetWorldName() == "The_Labratory")
+		{
+			Character->SetWorldName("The_Factory");
+		}
+		else
+		{
+			Character->SetWorldName("The_Labratory");
+		}
+
 		//Saving the variables.
 		Character->RunSaveGame();
-
 		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 	}
 }
