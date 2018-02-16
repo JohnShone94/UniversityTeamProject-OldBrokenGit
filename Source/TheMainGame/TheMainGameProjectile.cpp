@@ -37,9 +37,8 @@ void ATheMainGameProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-		Destroy();
 	}
+	Destroy();
 }
 
 void ATheMainGameProjectile::InitVelocity(const FVector & ShootDirection)
