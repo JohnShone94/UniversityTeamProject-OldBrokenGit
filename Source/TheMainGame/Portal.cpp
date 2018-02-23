@@ -43,7 +43,8 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	if(OtherActor == Player && LevelToLoad != "" && Character->GetPortalActive())
 	{
 		LevelToLoad = Character->GetWorldName();
-
+		Character->SetPortalActive(false);
+		/*
 		if (Character->GetWorldName() == "The_Labratory")
 		{
 			Character->SetWorldName("The_Factory");
@@ -51,7 +52,7 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		else
 		{
 			Character->SetWorldName("The_Labratory");
-		}
+		}*/
 
 		//Saving the variables.
 		Character->RunSaveGame();

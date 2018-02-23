@@ -95,6 +95,7 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	CurrentTime = 120;
 	pHealth = 200;
 	pMaxHealth = 200;
+	Labratory = false;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -324,7 +325,7 @@ void ATheMainGameCharacter::UpdateTime(int time)
 {
 	if (CurrentTime <= 0)
 	{
-		PortalActive = false;
+		//PortalActive = false;
 	}
 	else
 	{
@@ -421,6 +422,34 @@ bool ATheMainGameCharacter::GetPortalActive()
 	return PortalActive;
 }
 
+
+void ATheMainGameCharacter::SetLabratory(bool active)
+{
+	Labratory = active;
+}
+bool ATheMainGameCharacter::GetLabratory()
+{
+	return Labratory;
+}
+
+void ATheMainGameCharacter::SetFactory(bool active)
+{
+	Factory = active;
+}
+bool ATheMainGameCharacter::GetFactory()
+{
+	return Factory;
+}
+
+void ATheMainGameCharacter::SetSpacestation(bool active)
+{
+	Spacestation = active;
+}
+bool ATheMainGameCharacter::GetSpacestation()
+{
+	return Spacestation;
+}
+
 void ATheMainGameCharacter::SetWorldName(FName name)
 {
 	WorldName = name;
@@ -459,6 +488,7 @@ void ATheMainGameCharacter::RunSaveGame()
 	SaveGameInstance->sPortalActive = PortalActive;
 	SaveGameInstance->sHealth = pHealth;
 	SaveGameInstance->sMaxHealth = pMaxHealth;
+	SaveGameInstance->sOffWorld = Labratory;
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 }
 
@@ -473,4 +503,5 @@ void ATheMainGameCharacter::RunLoadGame()
 	CurrentTime = LoadGameInstance->sTime;
 	pHealth = LoadGameInstance->sHealth;
 	pMaxHealth = LoadGameInstance->sMaxHealth;
+	Labratory = LoadGameInstance->sOffWorld;
 }

@@ -179,6 +179,21 @@ public:
 		bool GetPortalActive();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetLabratory(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetLabratory();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetFactory(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetFactory();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetSpacestation(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetSpacestation();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetWorldName(FName name);
 	UFUNCTION(BlueprintPure, Category = Basic)
 		FName GetWorldName();
@@ -230,5 +245,14 @@ private:
 		FName WorldName;
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName SpawnPoint;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Factory;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Spacestation;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Labratory;
 };
 
