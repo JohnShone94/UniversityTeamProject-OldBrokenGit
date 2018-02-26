@@ -87,6 +87,15 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+	CurrentPower = 100;
+	MaxPower = 200;
+	WorldName = "The_Labratory";
+	PortalActive = false;
+	CurrentTime = 120;
+	pHealth = 200;
+	pMaxHealth = 200;
+	Labratory = false;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -94,8 +103,16 @@ void ATheMainGameCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 //------------------------------------------------ Setting up and loading the save game --------------------------------------------------------------------//
-	RunSaveGame();
 
+	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
+	{
+		RunSaveGame();
+	}
+	else
+	{
+		RunLoadGame();
+	}
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
@@ -304,6 +321,23 @@ int ATheMainGameCharacter::GetTime()
 	return CurrentTime;
 }
 
+void ATheMainGameCharacter::UpdateTime(int time)
+{
+	if (CurrentTime <= 0)
+	{
+		//PortalActive = false;
+	}
+	else
+	{
+		CurrentTime += time;
+	}
+}
+
+void ATheMainGameCharacter::ResetTime()
+{
+	CurrentTime = 120;
+}
+
 int ATheMainGameCharacter::GetMaxPower()
 {
 	return MaxPower;
@@ -381,10 +415,39 @@ bool ATheMainGameCharacter::GetIsOverlappingPower()
 void ATheMainGameCharacter::SetPortalActive(bool active)
 {
 	PortalActive = active;
+	CurrentTime = 120;
 }
 bool ATheMainGameCharacter::GetPortalActive()
 {
 	return PortalActive;
+}
+
+
+void ATheMainGameCharacter::SetLabratory(bool active)
+{
+	Labratory = active;
+}
+bool ATheMainGameCharacter::GetLabratory()
+{
+	return Labratory;
+}
+
+void ATheMainGameCharacter::SetFactory(bool active)
+{
+	Factory = active;
+}
+bool ATheMainGameCharacter::GetFactory()
+{
+	return Factory;
+}
+
+void ATheMainGameCharacter::SetSpacestation(bool active)
+{
+	Spacestation = active;
+}
+bool ATheMainGameCharacter::GetSpacestation()
+{
+	return Spacestation;
 }
 
 void ATheMainGameCharacter::SetWorldName(FName name)
@@ -417,47 +480,28 @@ FName ATheMainGameCharacter::GetSpawnPoint()
 
 void ATheMainGameCharacter::RunSaveGame()
 {
-	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	if (!Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex)))
-	{
-		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = 100;
-		SaveGameInstance->sMaxPower = 200;
-		SaveGameInstance->sTime = 120;
-		SaveGameInstance->sWorldName = "The_Labratory";
-		SaveGameInstance->sPortalActive = false;
-		SaveGameInstance->sSpawnPoint = "PlayerStart";
-		SaveGameInstance->sHealth = 200;
-		SaveGameInstance->sMaxHealth = 200;
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-	}
-
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
-	CurrentPower = LoadGameInstance->sCurrentPower;
-	MaxPower = LoadGameInstance->sMaxPower;
-	WorldName = LoadGameInstance->sWorldName;
-	PortalActive = LoadGameInstance->sPortalActive;
-	CurrentTime = LoadGameInstance->sTime;
-	SpawnPoint = LoadGameInstance->sSpawnPoint;
-	pHealth = LoadGameInstance->sHealth;
-	pMaxHealth = LoadGameInstance->sMaxHealth;
+	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	SaveGameInstance->sCurrentPower = CurrentPower;
+	SaveGameInstance->sMaxPower = MaxPower;
+	SaveGameInstance->sTime = CurrentTime;
+	SaveGameInstance->sWorldName = WorldName;
+	SaveGameInstance->sPortalActive = PortalActive;
+	SaveGameInstance->sHealth = pHealth;
+	SaveGameInstance->sMaxHealth = pMaxHealth;
+	SaveGameInstance->sOffWorld = Labratory;
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 }
 
 void ATheMainGameCharacter::RunLoadGame()
 {
 	UTheSaveGame* LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-
-	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
 	LoadGameInstance = Cast<UTheSaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
 	CurrentPower = LoadGameInstance->sCurrentPower;
 	MaxPower = LoadGameInstance->sMaxPower;
 	WorldName = LoadGameInstance->sWorldName;
 	PortalActive = LoadGameInstance->sPortalActive;
 	CurrentTime = LoadGameInstance->sTime;
-	SpawnPoint = LoadGameInstance->sSpawnPoint;
 	pHealth = LoadGameInstance->sHealth;
 	pMaxHealth = LoadGameInstance->sMaxHealth;
-
-	UGameplayStatics::OpenLevel(GetWorld(), WorldName);
+	Labratory = LoadGameInstance->sOffWorld;
 }

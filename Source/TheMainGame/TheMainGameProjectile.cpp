@@ -12,7 +12,7 @@ ATheMainGameProjectile::ATheMainGameProjectile()
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &ATheMainGameProjectile::OnHit);		// set up a notification for when this component hits something blocking
 
-	// Players can't walk on it
+																						// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
 
@@ -22,10 +22,10 @@ ATheMainGameProjectile::ATheMainGameProjectile()
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 3000.f;
-	ProjectileMovement->MaxSpeed = 3000.f;
+	ProjectileMovement->InitialSpeed = 1000.f;
+	ProjectileMovement->MaxSpeed = 1000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->bShouldBounce = false;
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
@@ -37,7 +37,12 @@ void ATheMainGameProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
-		Destroy();
 	}
+	Destroy();
 }
+
+void ATheMainGameProjectile::InitVelocity(const FVector & ShootDirection)
+{
+	ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
+}
+

@@ -12,13 +12,14 @@
 // Sets default values
 APowerCapsule::APowerCapsule()
 {
-	this->PowerCapsule = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PowerCapsule"));
-	this->PowerCapsule->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-}
+	this->PickupRoot = CreateDefaultSubobject<USceneComponent>(TEXT("PickupRoot"));
+	this->RootComponent = this->PickupRoot;
 
-void APowerCapsule::WasCollected_Implementation()
-{
-	Super::WasCollected_Implementation();
+	this->PowerCapsule = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PowerCapsule"));
+	this->PowerCapsule->SetupAttachment(this->RootComponent);
+
+	this->PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
+	this->PickupMesh->SetupAttachment(this->RootComponent);
 }
 
 int APowerCapsule::GetPower()

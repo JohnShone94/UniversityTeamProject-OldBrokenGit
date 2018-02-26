@@ -2,19 +2,16 @@
 
 #pragma once
 
-#include "Pickup.h"
 #include "PowerCapsule.generated.h"
 
 UCLASS()
-class THEMAINGAME_API APowerCapsule : public APickup
+class THEMAINGAME_API APowerCapsule : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	APowerCapsule();
-	
-	void WasCollected_Implementation() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power", meta = (BlueprintProtected = "true"))
 		int PowerAmount;
@@ -24,4 +21,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* PowerCapsule;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* PickupMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (AllowPrivateAccess = "true"))
+		USceneComponent* PickupRoot;
 };

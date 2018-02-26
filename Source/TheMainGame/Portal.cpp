@@ -13,25 +13,26 @@ APortal::APortal()
 	this->RootComponent = this->PortalRoot;
 
 	this->PortalMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalMesh"));
-	this->PortalMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalMesh->SetupAttachment(this->RootComponent);
 
 	this->PortalStandMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalStandMesh"));
-	this->PortalStandMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalStandMesh->SetupAttachment(this->RootComponent);
 
 	this->PortalStairsMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalStairsMesh"));
-	this->PortalStairsMesh->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalStairsMesh->SetupAttachment(this->RootComponent);
 
 	this->PortalCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("PortalCollision"));
 	this->PortalCollision->bGenerateOverlapEvents = true;
 	this->PortalCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	this->PortalCollision->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnOverlapBegin);
-	this->PortalCollision->AttachToComponent(this->RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	this->PortalCollision->SetupAttachment(this->RootComponent);
 
 }
 
 void APortal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 
 void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -41,22 +42,20 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	Character = (ATheMainGameCharacter*)GEngine->GetFirstLocalPlayerController(GetWorld())->GetPawn();
 	if(OtherActor == Player && LevelToLoad != "" && Character->GetPortalActive())
 	{
-
 		LevelToLoad = Character->GetWorldName();
-
-
-		//Changing the character variables.
-		Character->SetSpawnPoint(FName("PortalStart"));
+		Character->SetPortalActive(false);
+		/*
+		if (Character->GetWorldName() == "The_Labratory")
+		{
+			Character->SetWorldName("The_Factory");
+		}
+		else
+		{
+			Character->SetWorldName("The_Labratory");
+		}*/
 
 		//Saving the variables.
-		UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-		SaveGameInstance->sCurrentPower = Character->GetCurrentPower();
-		SaveGameInstance->sMaxPower = Character->GetMaxPower();
-		SaveGameInstance->sPortalActive = Character->GetPortalActive();
-		SaveGameInstance->sWorldName = Character->GetWorldName();
-		SaveGameInstance->sSpawnPoint = Character->GetSpawnPoint();
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-
+		Character->RunSaveGame();
 		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 	}
 }
