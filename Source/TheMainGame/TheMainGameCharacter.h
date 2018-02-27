@@ -214,7 +214,8 @@ public:
 		void RunSaveGame();
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void RunLoadGame();
-
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void RunReloadGame();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
