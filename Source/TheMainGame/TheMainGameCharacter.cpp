@@ -88,14 +88,14 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
 
-	CurrentPower = 100;
+	CurrentPower = 50;
 	MaxPower = 200;
 	WorldName = "The_Labratory";
 	PortalActive = false;
 	CurrentTime = 120;
 	pHealth = 200;
 	pMaxHealth = 200;
-	Labratory = false;
+	Labratory = true;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -325,7 +325,7 @@ void ATheMainGameCharacter::UpdateTime(int time)
 {
 	if (CurrentTime <= 0)
 	{
-		//PortalActive = false;
+		PortalActive = false;
 	}
 	else
 	{
@@ -387,7 +387,7 @@ void ATheMainGameCharacter::SetCurrentHealth(int health)
 		pHealth = pHealth + health;
 		if (pHealth < 0)
 		{
-			pHealth = 0;
+			RunReloadGame();
 		}
 	}
 }
@@ -426,6 +426,8 @@ bool ATheMainGameCharacter::GetPortalActive()
 void ATheMainGameCharacter::SetLabratory(bool active)
 {
 	Labratory = active;
+	Spacestation = false;
+	Factory = false;
 }
 bool ATheMainGameCharacter::GetLabratory()
 {
@@ -435,6 +437,8 @@ bool ATheMainGameCharacter::GetLabratory()
 void ATheMainGameCharacter::SetFactory(bool active)
 {
 	Factory = active;
+	Labratory = false;
+	Spacestation = false;
 }
 bool ATheMainGameCharacter::GetFactory()
 {
@@ -444,6 +448,8 @@ bool ATheMainGameCharacter::GetFactory()
 void ATheMainGameCharacter::SetSpacestation(bool active)
 {
 	Spacestation = active;
+	Factory = false;
+	Labratory = false;
 }
 bool ATheMainGameCharacter::GetSpacestation()
 {
@@ -504,4 +510,11 @@ void ATheMainGameCharacter::RunLoadGame()
 	pHealth = LoadGameInstance->sHealth;
 	pMaxHealth = LoadGameInstance->sMaxHealth;
 	Labratory = LoadGameInstance->sOffWorld;
+}
+
+void ATheMainGameCharacter::RunReloadGame()
+{
+	RunLoadGame();
+	
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*GetWorld()->GetName()));
 }
