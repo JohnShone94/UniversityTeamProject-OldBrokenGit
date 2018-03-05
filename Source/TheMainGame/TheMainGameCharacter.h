@@ -194,6 +194,26 @@ public:
 		bool GetSpacestation();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetTutorial1(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetTutorial1();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetTutorial2(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetTutorial2();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetTutorial3(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetTutorial3();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetTutorial4(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetTutorial4();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetWorldName(FName name);
 	UFUNCTION(BlueprintPure, Category = Basic)
 		FName GetWorldName();
@@ -255,5 +275,14 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Labratory;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Tutorial1;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Tutorial2;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Tutorial3;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Tutorial4;
 };
 

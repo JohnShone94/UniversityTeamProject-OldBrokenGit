@@ -96,6 +96,10 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	pHealth = 200;
 	pMaxHealth = 200;
 	Labratory = true;
+	Tutorial1 = false;
+	Tutorial2 = false;
+	Tutorial3 = false;
+	Tutorial4 = false;
 }
 
 void ATheMainGameCharacter::BeginPlay()
@@ -456,6 +460,42 @@ bool ATheMainGameCharacter::GetSpacestation()
 	return Spacestation;
 }
 
+void ATheMainGameCharacter::SetTutorial1(bool active)
+{
+	Tutorial1 = active;
+}
+bool ATheMainGameCharacter::GetTutorial1()
+{
+	return Tutorial1;
+}
+
+void ATheMainGameCharacter::SetTutorial2(bool active)
+{
+	Tutorial2 = active;
+}
+bool ATheMainGameCharacter::GetTutorial2()
+{
+	return Tutorial2;
+}
+
+void ATheMainGameCharacter::SetTutorial3(bool active)
+{
+	Tutorial3 = active;
+}
+bool ATheMainGameCharacter::GetTutorial3()
+{
+	return Tutorial3;
+}
+
+void ATheMainGameCharacter::SetTutorial4(bool active)
+{
+	Tutorial4 = active;
+}
+bool ATheMainGameCharacter::GetTutorial4()
+{
+	return Tutorial4;
+}
+
 void ATheMainGameCharacter::SetWorldName(FName name)
 {
 	WorldName = name;
@@ -495,6 +535,10 @@ void ATheMainGameCharacter::RunSaveGame()
 	SaveGameInstance->sHealth = pHealth;
 	SaveGameInstance->sMaxHealth = pMaxHealth;
 	SaveGameInstance->sOffWorld = Labratory;
+	SaveGameInstance->sTutorial1 = Tutorial1;
+	SaveGameInstance->sTutorial2 = Tutorial2;
+	SaveGameInstance->sTutorial3 = Tutorial3;
+	SaveGameInstance->sTutorial4 = Tutorial4;
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 }
 
@@ -510,6 +554,10 @@ void ATheMainGameCharacter::RunLoadGame()
 	pHealth = LoadGameInstance->sHealth;
 	pMaxHealth = LoadGameInstance->sMaxHealth;
 	Labratory = LoadGameInstance->sOffWorld;
+	Tutorial1 = LoadGameInstance->sTutorial1;
+	Tutorial2 = LoadGameInstance->sTutorial2;
+	Tutorial3 = LoadGameInstance->sTutorial3;
+	Tutorial4 = LoadGameInstance->sTutorial4;
 }
 
 void ATheMainGameCharacter::RunReloadGame()
