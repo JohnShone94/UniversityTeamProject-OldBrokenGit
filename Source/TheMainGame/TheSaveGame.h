@@ -55,6 +55,9 @@ public:
 		bool sOffWorld;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sFlashlight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		bool sTutorial1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		bool sTutorial2;
