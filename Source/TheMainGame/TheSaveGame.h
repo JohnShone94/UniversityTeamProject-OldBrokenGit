@@ -53,4 +53,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		bool sOffWorld;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sTutorial1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sTutorial2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sTutorial3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sTutorial4;
 };
