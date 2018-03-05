@@ -460,6 +460,42 @@ bool ATheMainGameCharacter::GetSpacestation()
 	return Spacestation;
 }
 
+void ATheMainGameCharacter::SetFlashlight(bool active)
+{
+	Flashlight = true;
+}
+bool ATheMainGameCharacter::GetFlashlight()
+{
+	return Flashlight;
+}
+
+void ATheMainGameCharacter::SetWorldName(FName name)
+{
+	WorldName = name;
+
+	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	SaveGameInstance->sWorldName = WorldName;
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+}
+FName ATheMainGameCharacter::GetWorldName()
+{
+	return WorldName;
+}
+
+
+void ATheMainGameCharacter::SetSpawnPoint(FName sp)
+{
+	SpawnPoint = sp;
+
+	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
+	SaveGameInstance->sSpawnPoint = SpawnPoint;
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+}
+FName ATheMainGameCharacter::GetSpawnPoint()
+{
+	return SpawnPoint;
+}
+
 void ATheMainGameCharacter::SetTutorial1(bool active)
 {
 	Tutorial1 = active;
@@ -496,34 +532,6 @@ bool ATheMainGameCharacter::GetTutorial4()
 	return Tutorial4;
 }
 
-void ATheMainGameCharacter::SetWorldName(FName name)
-{
-	WorldName = name;
-
-	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	SaveGameInstance->sWorldName = WorldName;
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-}
-FName ATheMainGameCharacter::GetWorldName()
-{
-	return WorldName;
-}
-
-
-void ATheMainGameCharacter::SetSpawnPoint(FName sp)
-{
-	SpawnPoint = sp;
-
-	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	SaveGameInstance->sSpawnPoint = SpawnPoint;
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-}
-FName ATheMainGameCharacter::GetSpawnPoint()
-{
-	return SpawnPoint;
-}
-
-
 void ATheMainGameCharacter::RunSaveGame()
 {
 	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
@@ -535,6 +543,8 @@ void ATheMainGameCharacter::RunSaveGame()
 	SaveGameInstance->sHealth = pHealth;
 	SaveGameInstance->sMaxHealth = pMaxHealth;
 	SaveGameInstance->sOffWorld = Labratory;
+	SaveGameInstance->sFlashlight = Flashlight;
+
 	SaveGameInstance->sTutorial1 = Tutorial1;
 	SaveGameInstance->sTutorial2 = Tutorial2;
 	SaveGameInstance->sTutorial3 = Tutorial3;
@@ -554,6 +564,8 @@ void ATheMainGameCharacter::RunLoadGame()
 	pHealth = LoadGameInstance->sHealth;
 	pMaxHealth = LoadGameInstance->sMaxHealth;
 	Labratory = LoadGameInstance->sOffWorld;
+	Flashlight = LoadGameInstance->sFlashlight;
+
 	Tutorial1 = LoadGameInstance->sTutorial1;
 	Tutorial2 = LoadGameInstance->sTutorial2;
 	Tutorial3 = LoadGameInstance->sTutorial3;
