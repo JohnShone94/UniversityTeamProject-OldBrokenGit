@@ -96,6 +96,7 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	pHealth = 200;
 	pMaxHealth = 200;
 	Labratory = true;
+	Flashlight = false;
 	Tutorial1 = false;
 	Tutorial2 = false;
 	Tutorial3 = false;
@@ -306,18 +307,15 @@ int ATheMainGameCharacter::GetCurrentPower()
 
 void ATheMainGameCharacter::SetCurrentPower(int power)
 {
-	if (CurrentPower > MaxPower)
-	{
-		CurrentPower = MaxPower;
-	}
-	else
-	{
 		CurrentPower = CurrentPower + power;
 		if (CurrentPower < 0)
 		{
 			CurrentPower = 0;
 		}
-	}
+		if (CurrentPower >= MaxPower + 1)
+		{
+			CurrentPower = MaxPower;
+		}
 }
 
 int ATheMainGameCharacter::GetTime()
