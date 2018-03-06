@@ -194,6 +194,11 @@ public:
 		bool GetSpacestation();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetFlashlight(bool active);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		bool GetFlashlight();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
 		void SetTutorial1(bool active);
 	UFUNCTION(BlueprintPure, Category = Basic)
 		bool GetTutorial1();
@@ -275,6 +280,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Labratory;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Flashlight;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Tutorial1;
