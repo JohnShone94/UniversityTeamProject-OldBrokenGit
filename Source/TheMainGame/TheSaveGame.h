@@ -46,13 +46,22 @@ public:
 		FName sWorldName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		FString sCurrentWorld;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		int sTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
-		FVector location;
+		FRotator sCheckpointRot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		FVector sCheckpointLoc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
-		bool sOffWorld;
+		bool sLabratory;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sFactory;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
+		bool sSpaceStation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Game")
 		bool sFlashlight;

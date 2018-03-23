@@ -88,13 +88,18 @@ ATheMainGameCharacter::ATheMainGameCharacter()
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
 
+
 	CurrentPower = 50;
 	MaxPower = 200;
 	WorldName = "The_Labratory";
+	CurrentWorld = "The_Labratory";
 	PortalActive = false;
 	CurrentTime = 120;
 	pHealth = 200;
 	pMaxHealth = 200;
+	MaxAmmo = 50;
+	Ammo = MaxAmmo;
+	gunType = 0;
 	Labratory = true;
 	Flashlight = false;
 	Tutorial1 = false;
@@ -118,6 +123,11 @@ void ATheMainGameCharacter::BeginPlay()
 	{
 		RunLoadGame();
 	}
+
+/*	UWorld* const World = GetWorld();
+	ACharacter* myCharacter = UGameplayStatics::GetPlayerCharacter(World, 0);
+	myCharacter->SetActorLocation(Checkpoint)*/
+
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
@@ -152,7 +162,9 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ATheMainGameCharacter::TouchStarted);
 	if (EnableTouchscreenMovement(PlayerInputComponent) == false)
 	{
-		PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATheMainGameCharacter::OnFire);
+		PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATheMainGameCharacter::StartFire);
+		PlayerInputComponent->BindAction("Fire", IE_Released, this, &ATheMainGameCharacter::StopFire);
+		PlayerInputComponent->BindAction("SwitchGun", IE_Pressed, this, &ATheMainGameCharacter::SetGunType);
 	}
 
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATheMainGameCharacter::OnResetVR);
@@ -174,52 +186,127 @@ void ATheMainGameCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 void ATheMainGameCharacter::OnFire()
 {
-	// try and fire a projectile
-	if (ProjectileClass != NULL)
+	if (gunType == 1 && shooting == true && !Overheated && !OverlappingComp)
 	{
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+		FTimerHandle FuzeTimerHandle;
+
+		// try and fire a projectile
+		if (ProjectileClass != NULL)
 		{
-			if (bUsingMotionControllers)
+			UWorld* const World = GetWorld();
+			if (World != NULL)
 			{
-				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ATheMainGameProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-			else
-			{
-				const FRotator SpawnRotation = GetControlRotation();
-				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+				if (bUsingMotionControllers)
+				{
+					const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+					const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+					World->SpawnActor<ATheMainGameProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+				}
+				else
+				{
+					const FRotator SpawnRotation = GetControlRotation();
+					// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+					const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
 
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+					//Set Spawn Collision Handling Override
+					FActorSpawnParameters ActorSpawnParams;
+					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-				// spawn the projectile at the muzzle
-				World->SpawnActor<ATheMainGameProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+					// spawn the projectile at the muzzle
+					World->SpawnActor<ATheMainGameProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+					Ammo--;
+					GetWorld()->GetTimerManager().SetTimer(FuzeTimerHandle, this, &ATheMainGameCharacter::OnFire, 0.3f, false);
+				}
 			}
 		}
-	}
 
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
+		// try and play the sound if specified
+		if (FireSound != NULL)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 		}
+
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
+		{
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
+		}
+
+		if (Ammo <= 0)
+		{
+			BeginOverheat();
+		}
+
+	}
+	else if(gunType == 0 && !Overheated && !OverlappingComp)
+	{
+		// try and fire a projectile
+		if (ProjectileClass != NULL)
+		{
+			UWorld* const World = GetWorld();
+			if (World != NULL)
+			{
+				if (bUsingMotionControllers)
+				{
+					const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+					const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+					World->SpawnActor<ATheMainGameProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+				}
+				else
+				{
+					const FRotator SpawnRotation = GetControlRotation();
+					// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+					const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+
+					//Set Spawn Collision Handling Override
+					FActorSpawnParameters ActorSpawnParams;
+					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+					// spawn the projectile at the muzzle
+					World->SpawnActor<ATheMainGameProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+					Ammo--;
+				}
+			}
+		}
+		// try and play the sound if specified
+		if (FireSound != NULL)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		}
+
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
+		{
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
+		}
+
+		if (Ammo <= 0)
+		{
+			BeginOverheat();
+		}
+
 	}
 }
+void ATheMainGameCharacter::StartFire()
+{
+	shooting = true;
+	OnFire();
+}
 
+void ATheMainGameCharacter::StopFire()
+{
+	shooting = false;
+}
 void ATheMainGameCharacter::OnResetVR()
 {
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
@@ -373,6 +460,27 @@ void ATheMainGameCharacter::SetMaxHealth(int maxHealth)
 		pMaxHealth += maxHealth;
 	}
 }
+void ATheMainGameCharacter::SetGunType()
+{
+	switch (gunType)
+	{
+	case 0:
+		gunType = 1;
+		MaxAmmo = 100;
+		Ammo = MaxAmmo;
+		break;
+	case 1:
+		gunType = 0;
+		MaxAmmo = 50;
+		Ammo = MaxAmmo;
+		break;
+	default:
+		gunType = 0;
+		MaxAmmo = 50;
+		Ammo = MaxAmmo;
+		break;
+	}
+}
 int ATheMainGameCharacter::GetCurrentHealth()
 {
 	return pHealth;
@@ -389,7 +497,7 @@ void ATheMainGameCharacter::SetCurrentHealth(int health)
 		pHealth = pHealth + health;
 		if (pHealth < 0)
 		{
-			RunReloadGame();
+		//	RunReloadGame();
 		}
 	}
 }
@@ -460,7 +568,7 @@ bool ATheMainGameCharacter::GetSpacestation()
 
 void ATheMainGameCharacter::SetFlashlight(bool active)
 {
-	Flashlight = true;
+	Flashlight = active;
 }
 bool ATheMainGameCharacter::GetFlashlight()
 {
@@ -480,19 +588,37 @@ FName ATheMainGameCharacter::GetWorldName()
 	return WorldName;
 }
 
-
-void ATheMainGameCharacter::SetSpawnPoint(FName sp)
+void ATheMainGameCharacter::SetCurrentWorld(FString name)
 {
-	SpawnPoint = sp;
+	CurrentWorld = name;
+	RunSaveGame();
+}
 
-	UTheSaveGame* SaveGameInstance = Cast<UTheSaveGame>(UGameplayStatics::CreateSaveGameObject(UTheSaveGame::StaticClass()));
-	SaveGameInstance->sSpawnPoint = SpawnPoint;
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-}
-FName ATheMainGameCharacter::GetSpawnPoint()
+FString ATheMainGameCharacter::GetCurrentWorld()
 {
-	return SpawnPoint;
+	return CurrentWorld;
 }
+
+void ATheMainGameCharacter::SetCheckpointRot(FRotator checkpointRot)
+{
+	CheckpointRot = checkpointRot;
+}
+
+FRotator ATheMainGameCharacter::GetCheckPointRot()
+{
+	return CheckpointRot;
+}
+
+void ATheMainGameCharacter::SetCheckpointLoc(FVector checkpointLoc)
+{
+	CheckpointLoc = checkpointLoc;
+}
+
+FVector ATheMainGameCharacter::GetCheckPointLoc()
+{
+	return CheckpointLoc;
+}
+
 
 void ATheMainGameCharacter::SetTutorial1(bool active)
 {
@@ -540,8 +666,14 @@ void ATheMainGameCharacter::RunSaveGame()
 	SaveGameInstance->sPortalActive = PortalActive;
 	SaveGameInstance->sHealth = pHealth;
 	SaveGameInstance->sMaxHealth = pMaxHealth;
-	SaveGameInstance->sOffWorld = Labratory;
+	SaveGameInstance->sLabratory = Labratory;
+	SaveGameInstance->sFactory = Factory;
+	SaveGameInstance->sSpaceStation = Spacestation;
 	SaveGameInstance->sFlashlight = Flashlight;
+	SaveGameInstance->sCurrentWorld = GetWorld()->GetName();
+
+	SaveGameInstance->sCheckpointLoc = CheckpointLoc;
+	SaveGameInstance->sCheckpointRot = CheckpointRot;
 
 	SaveGameInstance->sTutorial1 = Tutorial1;
 	SaveGameInstance->sTutorial2 = Tutorial2;
@@ -561,8 +693,14 @@ void ATheMainGameCharacter::RunLoadGame()
 	CurrentTime = LoadGameInstance->sTime;
 	pHealth = LoadGameInstance->sHealth;
 	pMaxHealth = LoadGameInstance->sMaxHealth;
-	Labratory = LoadGameInstance->sOffWorld;
+	Labratory = LoadGameInstance->sLabratory;
+	Factory = LoadGameInstance->sFactory;
+	Spacestation = LoadGameInstance->sSpaceStation;
 	Flashlight = LoadGameInstance->sFlashlight;
+	CurrentWorld = LoadGameInstance->sCurrentWorld;
+
+	CheckpointLoc = LoadGameInstance->sCheckpointLoc;
+	CheckpointRot = LoadGameInstance->sCheckpointRot;
 
 	Tutorial1 = LoadGameInstance->sTutorial1;
 	Tutorial2 = LoadGameInstance->sTutorial2;
@@ -573,6 +711,17 @@ void ATheMainGameCharacter::RunLoadGame()
 void ATheMainGameCharacter::RunReloadGame()
 {
 	RunLoadGame();
-	
-	UGameplayStatics::OpenLevel(GetWorld(), FName(*GetWorld()->GetName()));
+}
+
+void ATheMainGameCharacter::BeginOverheat()
+{
+	Overheated = true;
+	FTimerHandle FuzeTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(FuzeTimerHandle, this, &ATheMainGameCharacter::EndOverheat, 3.0f, false);
+}
+
+void ATheMainGameCharacter::EndOverheat()
+{
+	Overheated = false;
+	Ammo = MaxAmmo;
 }

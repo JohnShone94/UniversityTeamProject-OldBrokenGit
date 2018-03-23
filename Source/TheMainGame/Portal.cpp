@@ -44,6 +44,9 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	{
 		LevelToLoad = Character->GetWorldName();
 
+		Character->SetCheckpointLoc(FVector(0.0f, 0.0f, 0.0f));
+		Character->SetCheckpointRot(FRotator(0.0f, 0.0f, 0.0f));
+
 		if (Character->GetWorldName() == "The_Factory" || Character->GetWorldName() == "The_SpaceStation")
 		{
 			Character->SetWorldName("The_Labratory");
@@ -52,9 +55,8 @@ void APortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		{
 			Character->SetPortalActive(false);
 		}
-
-		//Saving the variables.
 		Character->RunSaveGame();
+
 		UGameplayStatics::OpenLevel(GetWorld(), LevelToLoad);
 	}
 }

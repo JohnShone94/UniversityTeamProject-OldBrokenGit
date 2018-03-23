@@ -84,7 +84,8 @@ protected:
 	
 	/** Fires a projectile. */
 	void OnFire();
-
+	void StopFire();
+	void StartFire();
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();
 
@@ -116,7 +117,7 @@ protected:
 	};
 	void BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
 	void EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
+	//void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
 	TouchData	TouchItem;
 	
 protected:
@@ -224,9 +225,19 @@ public:
 		FName GetWorldName();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
-		void SetSpawnPoint(FName sp);
+		void SetCurrentWorld(FString name);
 	UFUNCTION(BlueprintPure, Category = Basic)
-		FName GetSpawnPoint();
+		FString GetCurrentWorld();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetCheckpointLoc(FVector checkpointLoc);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		FVector GetCheckPointLoc();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetCheckpointRot(FRotator checkpointRot);
+	UFUNCTION(BlueprintPure, Category = Basic)
+		FRotator GetCheckPointRot();
 
 	UFUNCTION(BlueprintPure, Category = Basic)
 		int GetTime();
@@ -236,11 +247,19 @@ public:
 		void ResetTime();
 
 	UFUNCTION(BlueprintCallable, Category = Basic)
+		void SetGunType();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
 		void RunSaveGame();
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void RunLoadGame();
 	UFUNCTION(BlueprintCallable, Category = Basic)
 		void RunReloadGame();
+
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void BeginOverheat();
+	UFUNCTION(BlueprintCallable, Category = Basic)
+		void EndOverheat();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
@@ -251,6 +270,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool OverlappingPower;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Overheated;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int CurrentPower;
@@ -268,9 +290,24 @@ private:
 		int pMaxHealth;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int gunType;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int Ammo;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int MaxAmmo;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName WorldName;
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FName SpawnPoint;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FRotator CheckpointRot;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FVector CheckpointLoc;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Factory;
@@ -283,6 +320,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Flashlight;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool shooting;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FString CurrentWorld;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Tutorial1;
